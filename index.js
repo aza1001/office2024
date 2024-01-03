@@ -59,6 +59,8 @@ const authenticateToken = (req, res, next) => {
         info: {
             title: 'Office Appointment',
             version: '1.0.0',
+            description: "Group 13",
+            author: "Norazizah and Norfadhila"
         },
     },
     apis: ['./index.js'],

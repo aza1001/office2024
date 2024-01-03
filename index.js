@@ -591,3 +591,49 @@ app.delete('/appointments/:name', authenticateToken, async (req, res) => {
         res.status(500).send('Error deleting appointment');
       });
   });
+
+/**
+ * @swagger
+ * /appointments:
+ *   get:
+ *     summary: Get all appointments (for security)
+ *     tags: [Security]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: name
+ *         in: query
+ *         description: Filter appointments by name
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of appointments
+ *       403:
+ *         description: Invalid or unauthorized token
+ *       500:
+ *         description: Error retrieving appointments
+ */
+
+// Get all appointments (for security)
+app.get('/appointments', authenticateToken, async (req, res) => {
+    const { name } = req.query;
+    const { role } = req.user;
+  
+    if (role !== 'security') {
+      return res.status(403).send('Invalid or unauthorized token');
+    }
+  
+    const filter = name ? { name: { $regex: name, $options: 'i' } } : {};
+  
+    appointmentDB
+      .find(filter)
+      .toArray()
+      .then((appointments) => {
+        res.json(appointments);
+      })
+      .catch((error) => {
+        res.status(500).send('Error retrieving appointments');
+      });
+  });

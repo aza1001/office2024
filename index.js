@@ -638,6 +638,33 @@ app.get('/appointments', authenticateToken, async (req, res) => {
       });
   });
 
+/**
+ * @swagger
+ * /some-endpoint:
+ *   post:
+ *     summary: Some endpoint
+ *     tags:
+ *       - Security
+ *       - Staff
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               // Request body properties here
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *       403:
+ *         description: Invalid or unauthorized token
+ *       500:
+ *         description: Internal server error
+ */
+
+
 // Logout
 app.post('/logout', authenticateToken, async (req, res) => {
     const { role } = req.user;

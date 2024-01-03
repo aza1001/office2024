@@ -331,3 +331,109 @@ app.post('/login-security', async (req, res) => {
         res.status(500).send('Error storing token');
       });
   });
+
+  // Create appointment
+    app.post('/appointments', async (req, res) => {
+      const {
+        name,
+        company,
+        purpose,
+        phoneNo,
+        date,
+        time,
+        verification,
+        staff: { username },
+      } = req.body;
+
+      const appointment = {
+        name,
+        company,
+        purpose,
+        phoneNo,
+        date,
+        time,
+        verification,
+        staff: { username },
+      };
+
+      appointmentDB
+        .insertOne(appointment)
+        .then(() => {
+          res.status(200).send('Appointment created successfully');
+        })
+        .catch((error) => {
+          res.status(500).send('Error creating appointment');
+        });
+    });
+
+/**
+ * @swagger
+ * /appointments:
+ *   post:
+ *     summary: Create appointment
+ *     tags: [Public]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               company:
+ *                 type: string
+ *               purpose:
+ *                 type: string
+ *               phoneNo:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *               time:
+ *                 type: string
+ *               verification:
+ *                 type: boolean
+ *               staff:
+ *                 type: object
+ *                 properties:
+ *                   username:
+ *                     type: string
+ *     responses:
+ *       200:
+ *         description: Appointment created successfully
+ *       500:
+ *         description: Error creating appointment
+ */
+
+// Create appointment
+app.post('/appointments', async (req, res) => {
+    const {
+      name,
+      company,
+      purpose,
+      phoneNo,
+      date,
+      time,
+      verification,
+      staff: { username },
+    } = req.body;
+
+    const appointment = {
+      name,
+      company,
+      purpose,
+      phoneNo,
+      date,
+      time,
+      verification,
+      staff: { username },
+    };
+
+    appointmentDB
+      .insertOne(appointment)
+      .then(() => {
+        res.status(200).send('Appointment created successfully');
+      })
+      .catch((error) => {
+        res.status(500).send('Error creating appointment');
+      });
+  });

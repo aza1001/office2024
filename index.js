@@ -75,6 +75,59 @@ app.listen(port, () => {
    console.log(`Example app listening on port ${port}`)
 })
 
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Security
+ *   description: APIs accessible only by security personnel
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Staff
+ *   description: APIs accessible only by staff members
+ */
+
+/**
+ * @swagger
+ * /register-staff:
+ *   post:
+ *     summary: Register staff
+ *     tags: [Security]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Staff registered successfully
+ *       403:
+ *         description: Invalid or unauthorized token
+ *       409:
+ *         description: Username already exists
+ *       500:
+ *         description: Error registering staff
+ */
+
 // Register staff
 app.post('/register-staff', authenticateToken, async (req, res) => {
     const { role } = req.user;
@@ -107,6 +160,31 @@ app.post('/register-staff', authenticateToken, async (req, res) => {
         res.status(500).send('Error registering staff');
       });
   });
+
+/**
+ * @swagger
+ * /register-security:
+ *   post:
+ *     summary: Register security
+ *     tags: [Public]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Security registered successfully
+ *       409:
+ *         description: Username already exists
+ *       500:
+ *         description: Error registering security
+ */
 
 // Register security
 app.post('/register-security', async (req, res) => {

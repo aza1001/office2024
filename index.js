@@ -166,7 +166,7 @@ app.post('/register-staff', authenticateToken, async (req, res) => {
  * /register-security:
  *   post:
  *     summary: Register security
- *     tags: [Public]
+ *     tags: [Security]
  *     requestBody:
  *       content:
  *         application/json:
@@ -213,6 +213,39 @@ app.post('/register-security', async (req, res) => {
       });
   });
 
+/**
+ * @swagger
+ * /login-staff:
+ *   post:
+ *     summary: Staff login
+ *     tags: [Staff]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Staff logged in successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       401:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Error storing token
+ */
+
+
 // Staff login
 app.post('/login-staff', async (req, res) => {
     const { username, password } = req.body;
@@ -239,6 +272,38 @@ app.post('/login-staff', async (req, res) => {
         res.status(500).send('Error storing token');
       });
   });
+
+/**
+ * @swagger
+ * /login-security:
+ *   post:
+ *     summary: Security login
+ *     tags: [Security]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Security logged in successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       401:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Error storing token
+ */
 
 // Security login
 app.post('/login-security', async (req, res) => {

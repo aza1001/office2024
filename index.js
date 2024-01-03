@@ -640,9 +640,9 @@ app.get('/appointments', authenticateToken, async (req, res) => {
 
 /**
  * @swagger
- * /some-endpoint:
+ * /logout:
  *   post:
- *     summary: Some endpoint
+ *     summary: logout for staff/security
  *     tags:
  *       - Security
  *       - Staff

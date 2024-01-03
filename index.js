@@ -391,8 +391,6 @@ app.post('/login-security', async (req, res) => {
  *                 type: string
  *               time:
  *                 type: string
- *               verification:
- *                 type: boolean
  *               staff:
  *                 type: object
  *                 properties:

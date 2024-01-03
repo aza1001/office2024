@@ -59,8 +59,7 @@ const authenticateToken = (req, res, next) => {
         info: {
             title: 'Office Appointment',
             version: '1.0.0',
-            description: "Group 13",
-            author: "Norazizah and Norfadhila"
+            description: "Group 13\n "
         },
     },
     apis: ['./index.js'],
@@ -415,7 +414,7 @@ app.post('/appointments', async (req, res) => {
       phoneNo,
       date,
       time,
-      verification,
+      //verification,
       staff: { username },
     } = req.body;
 
@@ -426,7 +425,7 @@ app.post('/appointments', async (req, res) => {
       phoneNo,
       date,
       time,
-      verification,
+      //verification,
       staff: { username },
     };
 

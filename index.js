@@ -53,6 +53,20 @@ const authenticateToken = (req, res, next) => {
     });
   };
 
+  const options = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Office Appointment',
+            version: '1.0.0',
+        },
+    },
+    apis: ['./index.js'],
+};
+const swaggerSpec = swaggerJsdoc(options);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
 app.get('/', (req, res) => {
    res.send('Hello World!')
 })
@@ -60,3 +74,36 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
    console.log(`Example app listening on port ${port}`)
 })
+
+// Register staff
+app.post('/register-staff', authenticateToken, async (req, res) => {
+    const { role } = req.user;
+  
+    if (role !== 'security') {
+      return res.status(403).send('Invalid or unauthorized token');
+    }
+  
+    const { username, password } = req.body;
+  
+    const existingStaff = await staffDB.findOne({ username });
+  
+    if (existingStaff) {
+      return res.status(409).send('Username already exists');
+    }
+  
+    const hashedPassword = await bcrypt.hash(password, 10);
+  
+    const staff = {
+      username,
+      password: hashedPassword,
+    };
+  
+    staffDB
+      .insertOne(staff)
+      .then(() => {
+        res.status(200).send('Staff registered successfully');
+      })
+      .catch((error) => {
+        res.status(500).send('Error registering staff');
+      });
+  });

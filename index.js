@@ -59,7 +59,7 @@ const authenticateToken = (req, res, next) => {
         info: {
             title: 'AZFA Sdn. Bhd. Office Appointment',
             version: '1.0.0',
-            description: "Group 13\n Developer:\n -Norazizah Binti Zainal Abidin (B022110149)\n -Norfadhila Binti Mohd Azian (B022110143)"
+            description: "Group 13 \n Developer: \n -Norazizah Binti Zainal Abidin (B022110149) \n -Norfadhila Binti Mohd Azian (B022110143)"
         },
     },
     apis: ['./index.js'],

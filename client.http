@@ -1,5 +1,5 @@
 ### office visitor management system
-POST https://asgofficevms.azurewebsites.net/register-staff
+POST https://officevisitor.azurewebsites.net/register-staff
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZhZGgiLCJyb2xlIjoic2VjdXJpdHkiLCJpYXQiOjE3MDQwMzI2NDB9.gWOpeArs6ph8xr__H_Y3bNsAKBztV_b62eyD_4uF8rM
 
@@ -11,7 +11,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZhZ
 
 ###
 
-POST https://asgofficevms.azurewebsites.net/register-security
+POST https://officevisitor.azurewebsites.net/register-security
 Content-Type: application/json
 
 {
@@ -22,7 +22,7 @@ Content-Type: application/json
 
 ###
 
-POST https://asgofficevms.azurewebsites.net/login-staff
+POST https://officevisitor.azurewebsites.net/login-staff
 Content-Type: application/json
 
 {
@@ -33,7 +33,7 @@ Content-Type: application/json
 
 ###
 
-POST https://asgofficevms.azurewebsites.net/login-security
+POST https://officevisitor.azurewebsites.net/login-security
 Content-Type: application/json
 
 {
@@ -44,7 +44,7 @@ Content-Type: application/json
 
 ###
 
-POST https://asgofficevms.azurewebsites.net/appointments
+POST https://officevisitor.azurewebsites.net/appointments
 Content-Type: application/json
 
 {
@@ -62,13 +62,13 @@ Content-Type: application/json
 // visitor's form to make appointment
 ###
 
-GET https://asgofficevms.azurewebsites.net/staff-appointments/bob
+GET https://officevisitor.azurewebsites.net/staff-appointments/bob
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJvYiIsInJvbGUiOiJzdGFmZiIsImlhdCI6MTcwNDIwNzQ4N30.zhiaUv0j7gxRb_MRLToruUwp75Hqc0q3txtMESKK5XM
 // list appointment (staff can check their own appointment)
 
 ###
 
-PUT https://asgofficevms.azurewebsites.net/appointments/max
+PUT https://officevisitor.azurewebsites.net/appointments/max
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJvYiIsInJvbGUiOiJzdGFmZiIsImlhdCI6MTcwNDIwNzQ4N30.zhiaUv0j7gxRb_MRLToruUwp75Hqc0q3txtMESKK5XM
 Content-Type: application/json
 
@@ -76,21 +76,21 @@ Content-Type: application/json
 // only staff can verified their own visitor
 ###
 
-DELETE https://asgofficevms.azurewebsites.net/appointments/yat
+DELETE https://officevisitor.azurewebsites.net/appointments/yat
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZhZGgiLCJyb2xlIjoic3RhZmYiLCJpYXQiOjE2ODc2ODM1NDh9.XkbTmIIEl9YSoZfuEJJCuhwDln_PU9pLrOktBOdVsok
 // only staff can delete their own appointment
 ###
 
-GET https://asgofficevms.azurewebsites.net/appointments
+GET https://officevisitor.azurewebsites.net/appointments
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsaWNlIiwicm9sZSI6InNlY3VyaXR5IiwiaWF0IjoxNzA0MjA2MzgwfQ.bPPS811P9dWnydGWQUESzOdX8i8wdWLv35C-43VhgXU
 // for security to view all staffs' appointments
 
 ###
-GET https://asgofficevms.azurewebsites.net/appointments?name=max
+GET https://officevisitor.azurewebsites.net/appointments?name=max
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsaWNlIiwicm9sZSI6InNlY3VyaXR5IiwiaWF0IjoxNzA0MjA2MzgwfQ.bPPS811P9dWnydGWQUESzOdX8i8wdWLv35C-43VhgXU
 // security search visitor's name check verification
 ###
-POST https://asgofficevms.azurewebsites.net/logout
+POST https://officevisitor.azurewebsites.net/logout
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJvYiIsInJvbGUiOiJzdGFmZiIsImlhdCI6MTcwNDIwNzQ4N30.zhiaUv0j7gxRb_MRLToruUwp75Hqc0q3txtMESKK5XM
 Content-Type: application/json
 

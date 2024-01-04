@@ -102,6 +102,13 @@ app.listen(port, () => {
 
 /**
  * @swagger
+ * tags:
+ *   name: Testing API
+ *   description: APIs for testing only
+ */
+
+/**
+ * @swagger
  * /register-staff:
  *   post:
  *     summary: Register staff
@@ -691,3 +698,65 @@ app.post('/logout', authenticateToken, async (req, res) => {
       res.status(500).send('Invalid role');
     }
   });
+
+/*********** TESTING API *******************/
+
+/**
+ * @swagger
+ * /register-staff:
+ *   post:
+ *     summary: Register staff
+ *     tags: [Testing]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Staff registered successfully
+ *       403:
+ *         description: Invalid or unauthorized token
+ *       409:
+ *         description: Username already exists
+ *       500:
+ *         description: Error registering staff
+ */
+
+// Register staff
+app.post('/test/register-staff', authenticateToken, async (req, res) => {
+  /*const { role } = req.user;
+
+  if (role !== 'security') {
+    return res.status(403).send('Invalid or unauthorized token');
+  }*/
+
+  const { username, password } = req.body;
+
+  const existingStaff = await staffDB.findOne({ username });
+
+  if (existingStaff) {
+    return res.status(409).send('Username already exists');
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const staff = {
+    username,
+    password: hashedPassword,
+  };
+
+  staffDB
+    .insertOne(staff)
+    .then(() => {
+      res.status(200).send('Staff registered successfully');
+    })
+    .catch((error) => {
+      res.status(500).send('Error registering staff');
+    });
+});

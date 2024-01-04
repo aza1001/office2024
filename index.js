@@ -703,10 +703,10 @@ app.post('/logout', authenticateToken, async (req, res) => {
 
 /**
  * @swagger
- * /register-staff:
+ * /test/register-staff:
  *   post:
  *     summary: Register staff
- *     tags: [Testing]
+ *     tags: [Public]
  *     requestBody:
  *       content:
  *         application/json:
@@ -720,22 +720,15 @@ app.post('/logout', authenticateToken, async (req, res) => {
  *     responses:
  *       200:
  *         description: Staff registered successfully
- *       403:
- *         description: Invalid or unauthorized token
  *       409:
  *         description: Username already exists
  *       500:
  *         description: Error registering staff
  */
 
-// Register staff
-app.post('/test/register-staff', authenticateToken, async (req, res) => {
-  /*const { role } = req.user;
 
-  if (role !== 'security') {
-    return res.status(403).send('Invalid or unauthorized token');
-  }*/
-
+// Register staff (testing)
+app.post('/test/register-staff', async (req, res) => {
   const { username, password } = req.body;
 
   const existingStaff = await staffDB.findOne({ username });
@@ -760,3 +753,4 @@ app.post('/test/register-staff', authenticateToken, async (req, res) => {
       res.status(500).send('Error registering staff');
     });
 });
+

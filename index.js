@@ -778,9 +778,9 @@ app.post('/test/register-staff', async (req, res) => {
 
 /**
  * @swagger
- * /appointments:
+ * /test/appointments:
  *   post:
- *     summary: Create appointment
+ *     summary: Create appointment (testing)
  *     tags: [Testing API]
  *     requestBody:
  *       content:
@@ -846,4 +846,105 @@ app.post('/test/appointments', async (req, res) => {
     });
 });
 
+/**
+ * @swagger
+ * /test/login-staff:
+ *   post:
+ *     summary: Staff login (testing)
+ *     tags: [Testing API]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Staff logged in successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       401:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Error storing token
+ */
+app.post('/test/login-staff', async (req, res) => {
+  const { username, password } = req.body;
 
+  const staff = await testStaffDB.findOne({ username });
+
+  if (!staff) {
+    return res.status(401).send('Invalid credentials');
+  }
+
+  const passwordMatch = await bcrypt.compare(password, staff.password);
+
+  if (!passwordMatch) {
+    return res.status(401).send('Invalid credentials');
+  }
+
+  const token = jwt.sign({ username, role: 'staff' }, secretKey);
+  testStaffDB // Use the testing database collection
+    .updateOne({ username }, { $set: { token } })
+    .then(() => {
+      res.status(200).json({ token });
+    })
+    .catch(() => {
+      res.status(500).send('Error storing token');
+    });
+});
+
+/**
+ * @swagger
+ * /test/staff-appointments/{username}:
+ *   get:
+ *     summary: Get staff's appointments (testing)
+ *     tags: [Testing API]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: username
+ *         in: path
+ *         description: Staff member's username
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of staff's appointments
+ *       403:
+ *         description: Invalid or unauthorized token
+ *       500:
+ *         description: Error retrieving appointments
+ */
+app.get('/test/staff-appointments/:username', authenticateToken, async (req, res) => {
+  const { username } = req.params;
+  const { role, username: authenticatedUsername } = req.user;
+
+  if (role !== 'staff') {
+    return res.status(403).send('Invalid or unauthorized token');
+  }
+
+  if (username !== authenticatedUsername) {
+    return res.status(403).send('Invalid or unauthorized token');
+  }
+
+  testAppointmentDB // Use the testing database collection
+    .find({ 'staff.username': username })
+    .toArray()
+    .then((appointments) => {
+      res.json(appointments);
+    })
+    .catch((error) => {
+      res.status(500).send('Error retrieving appointments');
+    });
+});

@@ -1,5 +1,6 @@
 const express = require('express')
 const mongodb = require('mongodb')
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const swaggerJsdoc = require('swagger-jsdoc')
@@ -12,8 +13,8 @@ const port = process.env.PORT || 3000;
 const secretKey = 'officeapt';
 
 // MongoDB connection URL
-const mongoURL =
-  'mongodb+srv://aza:mongoaza@officevms.tilw1nt.mongodb.net/?retryWrites=true&w=majority';
+/*const mongoURL =
+  'mongodb+srv://aza:mongoaza@officevms.tilw1nt.mongodb.net/?retryWrites=true&w=majority';*/
 
 const dbName = 'officevms';
 const staffCollection = 'staff';
@@ -22,9 +23,27 @@ const appointmentCollection = 'appointments';
 
 let staffDB, securityDB, appointmentDB;
 
+
+const credentials = 'C:/Users/HP/Desktop/office2024/X509-cert-2696330171953200812.pem'
+const client = new MongoClient('mongodb+srv://officevms.tilw1nt.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority', {
+  tlsCertificateKeyFile: credentials,
+  serverApi: ServerApiVersion.v1
+});
+
 // MongoDB connection
-mongodb.MongoClient.connect(mongoURL, { useUnifiedTopology: true })
+/*mongodb.MongoClient.connect(mongoURL, { useUnifiedTopology: true })
   .then((client) => {
+    const db = client.db(dbName);
+    staffDB = db.collection(staffCollection);
+    securityDB = db.collection(securityCollection);
+    appointmentDB = db.collection(appointmentCollection);
+  })
+  .catch((err) => {
+    console.error('Error connecting to MongoDB:', err);
+  });*/
+
+  client.connect()
+  .then(() => {
     const db = client.db(dbName);
     staffDB = db.collection(staffCollection);
     securityDB = db.collection(securityCollection);
@@ -118,7 +137,7 @@ app.listen(port, () => {
  *     requestBody:
  *       content:
  *         application/json:
- *           schema:
+ *           schema: 
  *             type: object
  *             properties:
  *               username:

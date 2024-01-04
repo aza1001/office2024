@@ -602,10 +602,8 @@ app.delete('/appointments/:name', authenticateToken, async (req, res) => {
  * @swagger
  * /appointments:
  *   get:
- *     summary: Get all appointments (for security)
- *     tags: [Security]
- *     security:
- *       - bearerAuth: []
+ *     summary: view appointments using the name used when the appointment was made (visitor)
+ *     tags: [Public]
  *     parameters:
  *       - name: name
  *         in: query
@@ -616,88 +614,26 @@ app.delete('/appointments/:name', authenticateToken, async (req, res) => {
  *     responses:
  *       200:
  *         description: List of appointments
- *       403:
- *         description: Invalid or unauthorized token
  *       500:
  *         description: Error retrieving appointments
  */
 
-// Get all appointments (for security)
-app.get('/appointments', authenticateToken, async (req, res) => {
-    const { name } = req.query;
-    const { role } = req.user;
-  
-    if (role !== 'security') {
-      return res.status(403).send('Invalid or unauthorized token');
-    }
-  
-    const filter = name ? { name: { $regex: name, $options: 'i' } } : {};
-  
-    appointmentDB
-      .find(filter)
-      .toArray()
-      .then((appointments) => {
-        res.json(appointments);
-      })
-      .catch((error) => {
-        res.status(500).send('Error retrieving appointments');
-      });
-  });
+app.get('/appointments', async (req, res) => {
+  const { name } = req.query;
 
-/**
- * @swagger
- * /logout:
- *   post:
- *     summary: logout for staff/security
- *     tags:
- *       - Security
- *       - Staff
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               // Request body properties here
- *     responses:
- *       200:
- *         description: Successful response
- *       403:
- *         description: Invalid or unauthorized token
- *       500:
- *         description: Internal server error
- */
+  const filter = name ? { name: { $regex: name, $options: 'i' } } : {};
 
+  appointmentDB
+    .find(filter)
+    .toArray()
+    .then((appointments) => {
+      res.json(appointments);
+    })
+    .catch((error) => {
+      res.status(500).send('Error retrieving appointments');
+    });
+});
 
-// Logout
-app.post('/logout', authenticateToken, async (req, res) => {
-    const { role } = req.user;
-  
-    // Depending on the role (staff or security), update the corresponding collection (staffDB or securityDB)
-    if (role === 'staff') {
-      staffDB
-        .updateOne({ username: req.user.username }, { $unset: { token: 1 } })
-        .then(() => {
-          res.status(200).send('Logged out successfully');
-        })
-        .catch(() => {
-          res.status(500).send('Error logging out');
-        });
-    } else if (role === 'security') {
-      securityDB
-        .updateOne({ username: req.user.username }, { $unset: { token: 1 } })
-        .then(() => {
-          res.status(200).send('Logged out successfully');
-        })
-        .catch(() => {
-          res.status(500).send('Error logging out');
-        });
-    } else {
-      res.status(500).send('Invalid role');
-    }
-  });
 
 /*********** TESTING API *******************/
 
@@ -778,76 +714,6 @@ app.post('/test/register-staff', async (req, res) => {
 
 /**
  * @swagger
- * /test/appointments:
- *   post:
- *     summary: Create appointment (testing)
- *     tags: [Testing API]
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               company:
- *                 type: string
- *               purpose:
- *                 type: string
- *               phoneNo:
- *                 type: string
- *               date:
- *                 type: string
- *               time:
- *                 type: string
- *               staff:
- *                 type: object
- *                 properties:
- *                   username:
- *                     type: string
- *     responses:
- *       200:
- *         description: Appointment created successfully
- *       500:
- *         description: Error creating appointment
- */
-
-// Create appointment (testing)
-app.post('/test/appointments', async (req, res) => {
-  const {
-    name,
-    company,
-    purpose,
-    phoneNo,
-    date,
-    time,
-    //verification,
-    staff: { username },
-  } = req.body;
-
-  const appointment = {
-    name,
-    company,
-    purpose,
-    phoneNo,
-    date,
-    time,
-    //verification,
-    staff: { username },
-  };
-
-  testAppointmentDB  // Use the testing database collection
-    .insertOne(appointment)
-    .then(() => {
-      res.status(200).send('Appointment created successfully');
-    })
-    .catch((error) => {
-      res.status(500).send('Error creating appointment');
-    });
-});
-
-/**
- * @swagger
  * /test/login-staff:
  *   post:
  *     summary: Staff login (testing)
@@ -903,48 +769,4 @@ app.post('/test/login-staff', async (req, res) => {
     });
 });
 
-/**
- * @swagger
- * /test/staff-appointments/{username}:
- *   get:
- *     summary: Get staff's appointments (testing)
- *     tags: [Testing API]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - name: username
- *         in: path
- *         description: Staff member's username
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: List of staff's appointments
- *       403:
- *         description: Invalid or unauthorized token
- *       500:
- *         description: Error retrieving appointments
- */
-app.get('/test/staff-appointments/:username', authenticateToken, async (req, res) => {
-  const { username } = req.params;
-  const { role, username: authenticatedUsername } = req.user;
 
-  if (role !== 'staff') {
-    return res.status(403).send('Invalid or unauthorized token');
-  }
-
-  if (username !== authenticatedUsername) {
-    return res.status(403).send('Invalid or unauthorized token');
-  }
-
-  testAppointmentDB // Use the testing database collection
-    .find({ 'staff.username': username })
-    .toArray()
-    .then((appointments) => {
-      res.json(appointments);
-    })
-    .catch((error) => {
-      res.status(500).send('Error retrieving appointments');
-    });
-});

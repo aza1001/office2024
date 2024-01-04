@@ -701,11 +701,33 @@ app.post('/logout', authenticateToken, async (req, res) => {
 
 /*********** TESTING API *******************/
 
+// MongoDB connection URL for testing
+const testMongoURL =
+  'mongodb+srv://aza:mongoaza@officevms.tilw1nt.mongodb.net/test?retryWrites=true&w=majority';
+
+const testDBName = 'test';
+const testStaffCollection = 'staff';
+const testSecurityCollection = 'security';
+const testAppointmentCollection = 'appointments';
+
+let testStaffDB, testSecurityDB, testAppointmentDB;
+
+mongodb.MongoClient.connect(testMongoURL, { useUnifiedTopology: true })
+  .then((client) => {
+    const testDB = client.db(testDBName);
+    testStaffDB = testDB.collection(testStaffCollection);
+    testSecurityDB = testDB.collection(testSecurityCollection);
+    testAppointmentDB = testDB.collection(testAppointmentCollection);
+  })
+  .catch((err) => {
+    console.error('Error connecting to test MongoDB:', err);
+  });
+
 /**
  * @swagger
  * /test/register-staff:
  *   post:
- *     summary: Register staff
+ *     summary: Register staff (testing)
  *     tags: [Testing API]
  *     requestBody:
  *       content:
@@ -731,7 +753,7 @@ app.post('/logout', authenticateToken, async (req, res) => {
 app.post('/test/register-staff', async (req, res) => {
   const { username, password } = req.body;
 
-  const existingStaff = await staffDB.findOne({ username });
+  const existingStaff = await testStaffDB.findOne({ username });
 
   if (existingStaff) {
     return res.status(409).send('Username already exists');
@@ -744,7 +766,7 @@ app.post('/test/register-staff', async (req, res) => {
     password: hashedPassword,
   };
 
-  staffDB
+  testStaffDB
     .insertOne(staff)
     .then(() => {
       res.status(200).send('Staff registered successfully');
@@ -753,4 +775,6 @@ app.post('/test/register-staff', async (req, res) => {
       res.status(500).send('Error registering staff');
     });
 });
+
+
 

@@ -776,5 +776,74 @@ app.post('/test/register-staff', async (req, res) => {
     });
 });
 
+/**
+ * @swagger
+ * /appointments:
+ *   post:
+ *     summary: Create appointment
+ *     tags: [Testing API]
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               company:
+ *                 type: string
+ *               purpose:
+ *                 type: string
+ *               phoneNo:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *               time:
+ *                 type: string
+ *               staff:
+ *                 type: object
+ *                 properties:
+ *                   username:
+ *                     type: string
+ *     responses:
+ *       200:
+ *         description: Appointment created successfully
+ *       500:
+ *         description: Error creating appointment
+ */
+
+// Create appointment (testing)
+app.post('/test/appointments', async (req, res) => {
+  const {
+    name,
+    company,
+    purpose,
+    phoneNo,
+    date,
+    time,
+    //verification,
+    staff: { username },
+  } = req.body;
+
+  const appointment = {
+    name,
+    company,
+    purpose,
+    phoneNo,
+    date,
+    time,
+    //verification,
+    staff: { username },
+  };
+
+  testAppointmentDB  // Use the testing database collection
+    .insertOne(appointment)
+    .then(() => {
+      res.status(200).send('Appointment created successfully');
+    })
+    .catch((error) => {
+      res.status(500).send('Error creating appointment');
+    });
+});
 
 

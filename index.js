@@ -706,7 +706,7 @@ app.post('/logout', authenticateToken, async (req, res) => {
  * /test/register-staff:
  *   post:
  *     summary: Register staff
- *     tags: [Public]
+ *     tags: [Testing API]
  *     requestBody:
  *       content:
  *         application/json:

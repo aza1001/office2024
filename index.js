@@ -1,6 +1,5 @@
 const express = require('express')
-const mongodb = require('mongodb')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const mongodb = require('mongodb');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const swaggerJsdoc = require('swagger-jsdoc')
@@ -9,50 +8,29 @@ const app = express()
 
 app.use(express.json())
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3005;
 const secretKey = 'officeapt';
 
 // MongoDB connection URL
-/*const mongoURL =
-  'mongodb+srv://aza:mongoaza@officevms.tilw1nt.mongodb.net/?retryWrites=true&w=majority';*/
+const mongoURL =
+  'mongodb+srv://aza:mongoaza@officevms.tilw1nt.mongodb.net/?retryWrites=true&w=majority';
 
-const dbName = 'officevms';
+// MongoDB database and collections names
+const dbName = 'appointment';
 const staffCollection = 'staff';
 const securityCollection = 'security';
 const appointmentCollection = 'appointments';
 
-let staffDB, securityDB, appointmentDB;
-
-
-const credentials = 'C:/Users/HP/Desktop/office2024/X509-cert-2696330171953200812.pem'
-const client = new MongoClient('mongodb+srv://officevms.tilw1nt.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority', {
-  tlsCertificateKeyFile: credentials,
-  serverApi: ServerApiVersion.v1
-});
+// Middleware for parsing JSON data
+app.use(express.json());
 
 // MongoDB connection
-/*mongodb.MongoClient.connect(mongoURL, { useUnifiedTopology: true })
+mongodb.MongoClient.connect(mongoURL, { useUnifiedTopology: true })
   .then((client) => {
     const db = client.db(dbName);
-    staffDB = db.collection(staffCollection);
-    securityDB = db.collection(securityCollection);
-    appointmentDB = db.collection(appointmentCollection);
-  })
-  .catch((err) => {
-    console.error('Error connecting to MongoDB:', err);
-  });*/
-
-  client.connect()
-  .then(() => {
-    const db = client.db(dbName);
-    staffDB = db.collection(staffCollection);
-    securityDB = db.collection(securityCollection);
-    appointmentDB = db.collection(appointmentCollection);
-  })
-  .catch((err) => {
-    console.error('Error connecting to MongoDB:', err);
-  });
-
+    const staffDB = db.collection(staffCollection);
+    const securityDB = db.collection(securityCollection);
+    const appointmentDB = db.collection(appointmentCollection);
 
 // Middleware for authentication and authorization
 const authenticateToken = (req, res, next) => {
@@ -395,76 +373,6 @@ app.post('/login-security', async (req, res) => {
 
 /**
  * @swagger
- * /appointments:
- *   post:
- *     summary: Create appointment
- *     tags: [Public]
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               company:
- *                 type: string
- *               purpose:
- *                 type: string
- *               phoneNo:
- *                 type: string
- *               date:
- *                 type: string
- *               time:
- *                 type: string
- *               staff:
- *                 type: object
- *                 properties:
- *                   username:
- *                     type: string
- *     responses:
- *       200:
- *         description: Appointment created successfully
- *       500:
- *         description: Error creating appointment
- */
-
-// Create appointment
-app.post('/appointments', async (req, res) => {
-    const {
-      name,
-      company,
-      purpose,
-      phoneNo,
-      date,
-      time,
-      //verification,
-      staff: { username },
-    } = req.body;
-
-    const appointment = {
-      name,
-      company,
-      purpose,
-      phoneNo,
-      date,
-      time,
-      //verification,
-      staff: { username },
-    };
-
-    appointmentDB
-      .insertOne(appointment)
-      .then(() => {
-        res.status(200).send('Appointment created successfully');
-      })
-      .catch((error) => {
-        res.status(500).send('Error creating appointment');
-      });
-  });
-
-/**
- * @swagger
  * /staff-appointments/{username}:
  *   get:
  *     summary: Get staff's appointments
@@ -653,139 +561,13 @@ app.get('/appointments', async (req, res) => {
     });
 });
 
+ // Start the server
+ app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+})
+.catch((error) => {
+console.log('Error connecting to MongoDB:', error);
+});
 
 /*********** TESTING API *******************/
-
-// MongoDB connection URL for testing
-const testMongoURL =
-  'mongodb+srv://aza:mongoaza@officevms.tilw1nt.mongodb.net/test?retryWrites=true&w=majority';
-
-const testDBName = 'test';
-const testStaffCollection = 'staff';
-const testSecurityCollection = 'security';
-const testAppointmentCollection = 'appointments';
-
-let testStaffDB, testSecurityDB, testAppointmentDB;
-
-mongodb.MongoClient.connect(testMongoURL, { useUnifiedTopology: true })
-  .then((client) => {
-    const testDB = client.db(testDBName);
-    testStaffDB = testDB.collection(testStaffCollection);
-    testSecurityDB = testDB.collection(testSecurityCollection);
-    testAppointmentDB = testDB.collection(testAppointmentCollection);
-  })
-  .catch((err) => {
-    console.error('Error connecting to test MongoDB:', err);
-  });
-
-/**
- * @swagger
- * /test/register-staff:
- *   post:
- *     summary: Register staff (testing)
- *     tags: [Testing API]
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       200:
- *         description: Staff registered successfully
- *       409:
- *         description: Username already exists
- *       500:
- *         description: Error registering staff
- */
-
-
-// Register staff (testing)
-app.post('/test/register-staff', async (req, res) => {
-  const { username, password } = req.body;
-
-  const existingStaff = await testStaffDB.findOne({ username });
-
-  if (existingStaff) {
-    return res.status(409).send('Username already exists');
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const staff = {
-    username,
-    password: hashedPassword,
-  };
-
-  testStaffDB
-    .insertOne(staff)
-    .then(() => {
-      res.status(200).send('Staff registered successfully');
-    })
-    .catch((error) => {
-      res.status(500).send('Error registering staff');
-    });
-});
-
-/**
- * @swagger
- * /test/login-staff:
- *   post:
- *     summary: Staff login (testing)
- *     tags: [Testing API]
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       200:
- *         description: Staff logged in successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *       401:
- *         description: Invalid credentials
- *       500:
- *         description: Error storing token
- */
-app.post('/test/login-staff', async (req, res) => {
-  const { username, password } = req.body;
-
-  const staff = await testStaffDB.findOne({ username });
-
-  if (!staff) {
-    return res.status(401).send('Invalid credentials');
-  }
-
-  const passwordMatch = await bcrypt.compare(password, staff.password);
-
-  if (!passwordMatch) {
-    return res.status(401).send('Invalid credentials');
-  }
-
-  const token = jwt.sign({ username, role: 'staff' }, secretKey);
-  testStaffDB // Use the testing database collection
-    .updateOne({ username }, { $set: { token } })
-    .then(() => {
-      res.status(200).json({ token });
-    })
-    .catch(() => {
-      res.status(500).send('Error storing token');
-    });
-});
-
-

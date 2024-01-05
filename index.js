@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const swaggerJsdoc = require('swagger-jsdoc')
 const swaggerUi = require('swagger-ui-express')
+const fs = require('fs');
 const app = express()
 
 app.use(express.json())
@@ -11,10 +12,18 @@ app.use(express.json())
 const port = process.env.PORT || 3005;
 const secretKey = 'officeapt';
 
-// MongoDB connection URL
+/*// MongoDB connection URL with username & password
 const mongoURL =
-  'mongodb+srv://aza:mongoaza@officevms.tilw1nt.mongodb.net/?retryWrites=true&w=majority';
+  'mongodb+srv://aza:mongoaza@officevms.tilw1nt.mongodb.net/?retryWrites=true&w=majority';*/
 
+// MongoDB connection URL with certificate
+const mongoURL =
+  'mongodb+srv://officevms.tilw1nt.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority';
+
+// Add the path to your certificate file
+const tlsOptions = {
+  sslCA: [fs.readFileSync('C:/Users/HP/Desktop/office2024/X509-cert-2696330171953200812.pem')],
+};
 
 // MongoDB database and collections names
 const dbName = 'officevms';
@@ -25,7 +34,7 @@ const appointmentCollection = 'appointments';
 // Middleware for parsing JSON data
 app.use(express.json());
 
-// MongoDB connection
+/*// MongoDB connection
 mongodb.MongoClient.connect(mongoURL, { useUnifiedTopology: true })
   .then((client) => {
     const db = client.db(dbName);
@@ -35,8 +44,23 @@ mongodb.MongoClient.connect(mongoURL, { useUnifiedTopology: true })
   })
   .catch((err) => {
     console.error('Error connecting to MongoDB:', err);
-  });
+  });*/
 
+// MongoDB connection (CERT)
+mongodb.MongoClient.connect(mongoURL, {
+  useUnifiedTopology: true,
+  tls: true,
+  tlsCAFile: 'C:/Users/HP/Desktop/office2024/X509-cert-2696330171953200812.pem',
+})
+  .then((client) => {
+    const db = client.db(dbName);
+    staffDB = db.collection(staffCollection);
+    securityDB = db.collection(securityCollection);
+    appointmentDB = db.collection(appointmentCollection);
+  })
+  .catch((err) => {
+    console.error('Error connecting to MongoDB:', err);
+});
 
 // Middleware for authentication and authorization
 const authenticateToken = (req, res, next) => {

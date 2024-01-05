@@ -107,7 +107,7 @@ app.listen(port, () => {
 * @swagger
 * tags:
 *   name: Testing API
-*   description: APIs for testing only
+*   description: APIs for testing only (will not be saved into the main database)
 */
 
 /**
